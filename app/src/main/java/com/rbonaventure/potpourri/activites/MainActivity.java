@@ -23,7 +23,7 @@ public class MainActivity extends Activity {
         mFirebaseRemoteConfig = FirebaseRemoteConfig.getInstance();
 
         setContentView(mFirebaseRemoteConfig.getBoolean(RemoteConfig.EXPERIMENTATION_ENABLED_KEY) ?
-                R.layout.activity_csr_vs_ssr : R.layout.activity_bewizyu);
+                R.layout.activity_reactjs_vs_plain_html : R.layout.activity_bewizyu);
 
         mWelcomeMessage = findViewById(R.id.tv_welcome_message);
         mWelcomeMessage.setText(mFirebaseRemoteConfig.getString(RemoteConfig.WELCOME_MESSAGE_KEY));

@@ -20,5 +20,11 @@
         <value>false</value>
     </entry>
 
+    <!-- ReactJS vs Plain HTML. -->
+    <entry>
+        <key>reatjs_enabled</key>
+        <value>false</value>
+    </entry>
+
 </defaultsMap>
 <!-- END xml_defaults -->
