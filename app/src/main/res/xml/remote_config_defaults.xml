@@ -8,6 +8,12 @@
         <value>Je n\'ai pas de message de bienvenue</value>
     </entry>
 
+    <!-- Whether the experimentation is enabled or not. -->
+    <entry>
+        <key>experimentation_enabled</key>
+        <value>false</value>
+    </entry>
+
     <!-- Whether the Web content should be rendered on the server side or not. -->
     <entry>
         <key>serverside_rendering_enabled</key>

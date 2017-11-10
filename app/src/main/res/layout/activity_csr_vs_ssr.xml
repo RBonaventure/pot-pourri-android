@@ -5,7 +5,14 @@
     <TextView
         android:id="@+id/tv_welcome_message"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="top|center_horizontal"
+        android:padding="20dp"/>
+
+    <com.rbonaventure.potpourri.ui.CSRvsSSR
+        android:id="@+id/wv_rendering_experiment"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center" />
+        android:layout_below="@id/tv_welcome_message"/>
 
 </RelativeLayout>
