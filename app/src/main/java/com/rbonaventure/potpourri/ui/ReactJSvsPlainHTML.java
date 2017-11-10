@@ -16,6 +16,8 @@ import com.rbonaventure.potpourri.BuildConfig;
 import com.rbonaventure.potpourri.utils.RemoteConfig;
 import com.rbonaventure.potpourri.utils.Traces;
 
+import static android.webkit.WebSettings.LOAD_NO_CACHE;
+
 /**
  * Created by rbonaventure on 10/11/2017.
  */
@@ -52,6 +54,8 @@ public class ReactJSvsPlainHTML extends WebView {
         super(context, attrs);
 
         getSettings().setJavaScriptEnabled(true);
+        getSettings().setAppCacheEnabled(false);
+        getSettings().setCacheMode(LOAD_NO_CACHE);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
