@@ -22,7 +22,7 @@
 
     <!-- ReactJS vs Plain HTML. -->
     <entry>
-        <key>reatjs_enabled</key>
+        <key>reactjs_enabled</key>
         <value>false</value>
     </entry>
 
