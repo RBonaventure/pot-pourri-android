@@ -8,6 +8,7 @@ Auteur : Raphaël Bonaventure
 Quelques exemples d'intégration d'outils Firebase pour Android.
 
 ⚠️ Si vous voulez compiler cet exemple il vous faudra un projet Firebase et son fichier de configuration, comme décrit sur le [Github officiel](https://github.com/firebase/quickstart-android/blob/master/README.md).
+Les exemples de page HelloWorld sont dans le dossier "web/public".
 
 ------------
 
