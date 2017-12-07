@@ -11,5 +11,6 @@ public class Traces {
     public final static String REACT_JS_TIME = "react_js_time";
     public final static String PLAIN_HTML_TIME = "plain_html_time";
     public final static String BEWIZYU_TIME = "bewizyu_landing_page";
+    public final static String COLLABORATORS_TIME = "collaborators_time";
 
 }
