@@ -1,4 +1,4 @@
-Firebase Sample Project
+Firebase Sample Project [![Build Status](https://www.bitrise.io/app/68b366f10733eac7/status.svg?token=4slKldu0Q3CBdQDSUJSDhw&branch=master)](https://www.bitrise.io/app/68b366f10733eac7)
 ===
 
 Auteur : Raphaël Bonaventure
