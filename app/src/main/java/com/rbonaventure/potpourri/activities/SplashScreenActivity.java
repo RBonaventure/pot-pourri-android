@@ -1,4 +1,4 @@
-package com.rbonaventure.potpourri.activites;
+package com.rbonaventure.potpourri.activities;
 
 import android.app.Activity;
 import android.content.Intent;

@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">Pot Pourri</string>
+
+    <!-- Bottom bar -->
+    <string name="action_perfs">Perfs</string>
+    <string name="action_ab_testing">A/B</string>
+    <string name="action_firestore">Firestore</string>
+
+    <string name="resource_content_format"> <![CDATA[ <b> %1s </b> - %2s <br /> <i> %3s </i> ]]> </string>
 </resources>
