@@ -57,7 +57,7 @@ public class CollaboratorsFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {
-
+                return;
             }
 
         });

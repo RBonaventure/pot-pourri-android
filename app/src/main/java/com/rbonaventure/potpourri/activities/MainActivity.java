@@ -64,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
                         mWelcomeMessage.setText(mFirebaseRemoteConfig.getString(RemoteConfig.WELCOME_MESSAGE_KEY));
                         break;
                     case R.id.action_firestore:
+                    default:
                         mFragment = new CollaboratorsFragment();
                         mWelcomeMessage.setText(mFirebaseRemoteConfig.getString(RemoteConfig.THE_TEAM_KEY));
                         break;
