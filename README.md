@@ -14,6 +14,8 @@ Les exemples de page HelloWorld sont dans le dossier "web/public".
 
 [Posts Medium faisant référence à ce repo](https://medium.com/@raph.bonaventure)
 
+CI : Bitrise.io
+
 ## License
 
 Copyright 2017 Raphaël Bonaventure
