@@ -1,6 +1,7 @@
 package com.rbonaventure.potpourri.adapters;
 
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -8,6 +9,7 @@ import android.widget.TextView;
 
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.rbonaventure.potpourri.R;
 import com.rbonaventure.potpourri.models.Location;
 
 /**
@@ -37,13 +39,17 @@ public class LocationsAdapter extends BaseAdapter {
     public View getView(int position, View view, ViewGroup parent) {
         Location location = getItem(position).toObject(Location.class);
 
-        TextView text = new TextView(parent.getContext());
-        text.setText(location.getName());
-        return text;
+        if(view == null) {
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_location, null);
+        }
+
+        TextView tvLocation = view.findViewById(R.id.tv_location);
+        tvLocation.setText(location.getName());
+
+        return view;
     }
 
     public void setLocations(QuerySnapshot snapshot) {
-        Log.v("TAG", snapshot.size() + "");
         mLocations = snapshot;
         this.notifyDataSetChanged();
     }
