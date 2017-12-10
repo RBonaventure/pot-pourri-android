@@ -5,7 +5,7 @@
     <Spinner
         android:id="@+id/sp_location_selector"
         android:layout_width="wrap_content"
-        android:layout_alignParentRight="true"
+        android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"
         android:padding="10dp"/>
 

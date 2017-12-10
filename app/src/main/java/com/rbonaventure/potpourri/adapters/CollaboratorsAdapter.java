@@ -9,6 +9,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -19,8 +21,10 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
+import com.rbonaventure.potpourri.App;
 import com.rbonaventure.potpourri.R;
 import com.rbonaventure.potpourri.models.Collaborator;
+import com.rbonaventure.potpourri.utils.FirestoreCollections;
 import com.rbonaventure.potpourri.utils.Traces;
 import com.squareup.picasso.Picasso;
 
@@ -31,29 +35,28 @@ import java.util.List;
  * Created by rbonaventure on 04/12/2017.
  */
 
-public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdapter.ViewHolder> {
-    private List<Collaborator> mCollaborators = new ArrayList<>();
+public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdapter.CollaboratorViewHolder> implements Filterable {
+    private QuerySnapshot mCollaborators;
+    private List<Collaborator> mSelectedCollaborators = new ArrayList<>();
 
     Context mContext;
     Trace mTrace;
+    String mFilterValue = "LYS";
+    Filter mFilter;
 
     public CollaboratorsAdapter() {
 
         mTrace = FirebasePerformance.getInstance().newTrace(Traces.COLLABORATORS_TIME);
         mTrace.start();
-        //.whereEqualTo("location", "LYS")
-        FirebaseFirestore.getInstance().collection("resources").orderBy("icon").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+
+        FirebaseFirestore.getInstance().collection(FirestoreCollections.RESOURCES).orderBy("icon").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()) {
-                    Log.v("TAG", "Results : " + task.getResult().size());
-                    mCollaborators.clear();
-                    for(DocumentSnapshot snapshot : task.getResult()) {
-                        mCollaborators.add(snapshot.toObject(Collaborator.class));
-                    }
+                    mCollaborators = task.getResult();
                     CollaboratorsAdapter.this.notifyDataSetChanged();
                 } else {
-                    Log.v("TAG", task.getException().toString());
+                    Log.v(App.TAG, task.getException().toString());
                 }
                 mTrace.stop();
             }
@@ -61,15 +64,16 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public CollaboratorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
-        return new ViewHolder(inflater.inflate(R.layout.item_collaborator, parent, false));
+        return new CollaboratorViewHolder(inflater.inflate(R.layout.item_collaborator, parent, false));
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        Collaborator collaborator = mCollaborators.get(position);
+    public void onBindViewHolder(CollaboratorViewHolder holder, int position) {
+        Collaborator collaborator = mSelectedCollaborators.get(position);
+
         String content = mContext.getString(R.string.resource_content_format,
                 collaborator.getName(), collaborator.getJob(), collaborator.getQuote());
 
@@ -84,15 +88,23 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
 
     @Override
     public int getItemCount() {
-        return mCollaborators.size();
+        return mSelectedCollaborators.size();
     }
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public Filter getFilter() {
+        if(mFilter == null) {
+            mFilter = new CollaboratorFilter();
+        }
+        return mFilter;
+    }
+
+    static class CollaboratorViewHolder extends RecyclerView.ViewHolder {
         TextView mName;
         TextView mQuote;
         ImageView mIcon;
 
-        public ViewHolder(View itemView) {
+        public CollaboratorViewHolder(View itemView) {
             super(itemView);
             mName = itemView.findViewById(R.id.tv_client_name);
             mQuote = itemView.findViewById(R.id.tv_client_name);
@@ -100,4 +112,38 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
         }
     }
 
+    private class CollaboratorFilter extends Filter {
+
+        //Invoked in a worker thread to filter the data according to the constraint.
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+
+            FilterResults results = new FilterResults();
+            List<Collaborator> collaborators = new ArrayList<Collaborator>();
+
+            if(constraint != null && constraint.length() > 0) {
+
+                for (DocumentSnapshot document : mCollaborators.getDocuments()) {
+
+                    Collaborator collaborator = document.toObject(Collaborator.class);
+
+                    if (mFilterValue.equals(collaborator.getLocation())) {
+                        collaborators.add(collaborator);
+                    }
+                }
+            }
+
+            results.count = collaborators.size();
+            results.values = collaborators;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint,
+                                      FilterResults results) {
+            mSelectedCollaborators = (List<Collaborator>) results.values;
+            notifyDataSetChanged();
+        }
+    }
 }
