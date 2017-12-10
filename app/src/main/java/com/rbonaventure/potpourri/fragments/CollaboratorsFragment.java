@@ -6,7 +6,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,11 +20,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.rbonaventure.potpourri.R;
 import com.rbonaventure.potpourri.adapters.CollaboratorsAdapter;
 import com.rbonaventure.potpourri.adapters.LocationsAdapter;
+import com.rbonaventure.potpourri.utils.FirestoreCollections;
 
 
 public class CollaboratorsFragment extends Fragment {
 
-    private RecyclerView mReferencesRecycler;
+    private RecyclerView mCollaboratorsList;
     private CollaboratorsAdapter mCollaboratorsAdapter;
 
     public CollaboratorsFragment() {
@@ -48,21 +48,13 @@ public class CollaboratorsFragment extends Fragment {
         Spinner spinner = view.findViewById(R.id.sp_location_selector);
         spinner.setAdapter(locationsAdapter);
 
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                DocumentSnapshot snapshot = (DocumentSnapshot) parent.getAdapter().getItem(position);
-                Log.v("TAG", snapshot.getId());
-            }
+        mCollaboratorsAdapter = new CollaboratorsAdapter();
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) {
-                return;
-            }
+        mCollaboratorsList = view.findViewById(R.id.rv_collaborators);
+        mCollaboratorsList.setLayoutManager(new LinearLayoutManager(getContext()));
+        mCollaboratorsList.setAdapter(mCollaboratorsAdapter);
 
-        });
-
-        FirebaseFirestore.getInstance().collection("location").get().addOnCompleteListener(
+        FirebaseFirestore.getInstance().collection(FirestoreCollections.LOCATIONS).get().addOnCompleteListener(
                 new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
@@ -73,10 +65,19 @@ public class CollaboratorsFragment extends Fragment {
                 }
         );
 
-        mCollaboratorsAdapter = new CollaboratorsAdapter();
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                DocumentSnapshot snapshot = (DocumentSnapshot) parent.getAdapter().getItem(position);
+                mCollaboratorsAdapter.getFilter().filter(snapshot.getId());
+            }
 
-        mReferencesRecycler = view.findViewById(R.id.rv_collaborators);
-        mReferencesRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
-        mReferencesRecycler.setAdapter(mCollaboratorsAdapter);
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                return;
+            }
+
+        });
+
     }
 }

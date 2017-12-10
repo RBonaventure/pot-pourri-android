@@ -21,6 +21,9 @@ public class Collaborator {
     @PropertyName("job")
     String mJob;
 
+    @PropertyName("location")
+    String mLocation;
+
     public Collaborator() {
 
     }
@@ -39,6 +42,10 @@ public class Collaborator {
 
     public String getJob() {
         return mJob;
+    }
+
+    public String getLocation() {
+        return mLocation;
     }
 
 }
