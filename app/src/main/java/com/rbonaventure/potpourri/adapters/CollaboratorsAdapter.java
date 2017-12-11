@@ -88,7 +88,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
         holder.mReferences.removeAllViews();
         for(String reference : collaborator.getReferences()) {
             ImageView logo = new ImageView(mContext);
-            Picasso.with(mContext).load(reference).resize(0, 40).into(logo);
+            Picasso.with(mContext).load(reference).resize(0, 50).into(logo);
             holder.mReferences.addView(logo);
         }
 
