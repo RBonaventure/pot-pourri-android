@@ -3,6 +3,9 @@ package com.rbonaventure.potpourri.models;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 import com.google.firebase.firestore.PropertyName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by rbonaventure on 04/12/2017.
  */
@@ -23,6 +26,12 @@ public class Collaborator {
 
     @PropertyName("location")
     String mLocation;
+
+    @PropertyName("keywords")
+    List<String> mKeywords = new ArrayList<>();
+
+    @PropertyName("references")
+    List<String> mReferences = new ArrayList<>();
 
     public Collaborator() {
 
@@ -46,6 +55,14 @@ public class Collaborator {
 
     public String getLocation() {
         return mLocation;
+    }
+
+    public List<String> getKeywords() {
+        return mKeywords;
+    }
+
+    public List<String> getReferences() {
+        return mReferences;
     }
 
 }
