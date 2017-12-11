@@ -6,12 +6,14 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -66,13 +68,29 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
     @Override
     public CollaboratorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         mContext = parent.getContext();
-        LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+        LayoutInflater inflater = LayoutInflater.from(mContext);
         return new CollaboratorViewHolder(inflater.inflate(R.layout.item_collaborator, parent, false));
     }
 
     @Override
     public void onBindViewHolder(CollaboratorViewHolder holder, int position) {
         Collaborator collaborator = mSelectedCollaborators.get(position);
+
+        holder.mKeywords.removeAllViews();
+        for(String keyword : collaborator.getKeywords()) {
+            TextView tag = new TextView(mContext);
+            tag.setTextSize(TypedValue.COMPLEX_UNIT_SP, 10);
+            tag.setBackgroundResource(R.drawable.corner_radius);
+            tag.setText(keyword);
+            holder.mKeywords.addView(tag);
+        }
+
+        holder.mReferences.removeAllViews();
+        for(String reference : collaborator.getReferences()) {
+            ImageView logo = new ImageView(mContext);
+            Picasso.with(mContext).load(reference).resize(0, 40).into(logo);
+            holder.mReferences.addView(logo);
+        }
 
         String content = mContext.getString(R.string.resource_content_format,
                 collaborator.getName(), collaborator.getJob(), collaborator.getQuote());
@@ -101,14 +119,16 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
 
     static class CollaboratorViewHolder extends RecyclerView.ViewHolder {
         TextView mName;
-        TextView mQuote;
         ImageView mIcon;
+        LinearLayout mKeywords;
+        LinearLayout mReferences;
 
         public CollaboratorViewHolder(View itemView) {
             super(itemView);
-            mName = itemView.findViewById(R.id.tv_client_name);
-            mQuote = itemView.findViewById(R.id.tv_client_name);
             mIcon = itemView.findViewById(R.id.iv_client_logo);
+            mName = itemView.findViewById(R.id.tv_client_name);
+            mKeywords = itemView.findViewById(R.id.ll_keywords);
+            mReferences = itemView.findViewById(R.id.ll_references);
         }
     }
 
@@ -119,7 +139,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
         protected FilterResults performFiltering(CharSequence constraint) {
 
             FilterResults results = new FilterResults();
-            List<Collaborator> collaborators = new ArrayList<Collaborator>();
+            List<Collaborator> collaborators = new ArrayList<>();
 
             if(constraint != null && constraint.length() > 0) {
 
@@ -127,7 +147,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
 
                     Collaborator collaborator = document.toObject(Collaborator.class);
 
-                    if (mFilterValue.equals(collaborator.getLocation())) {
+                    if (constraint.equals(collaborator.getLocation())) {
                         collaborators.add(collaborator);
                     }
                 }
