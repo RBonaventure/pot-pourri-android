@@ -43,7 +43,6 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
 
     Context mContext;
     Trace mTrace;
-    String mFilterValue = "LYS";
     Filter mFilter;
 
     public CollaboratorsAdapter() {
@@ -144,7 +143,6 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
             if(constraint != null && constraint.length() > 0) {
 
                 for (DocumentSnapshot document : mCollaborators.getDocuments()) {
-
                     Collaborator collaborator = document.toObject(Collaborator.class);
 
                     if (constraint.equals(collaborator.getLocation())) {
