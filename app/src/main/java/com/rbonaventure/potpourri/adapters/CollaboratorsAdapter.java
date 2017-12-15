@@ -21,23 +21,15 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
-import com.rbonaventure.potpourri.App;
 import com.rbonaventure.potpourri.R;
 import com.rbonaventure.potpourri.models.Collaborator;
-import com.rbonaventure.potpourri.utils.FirestoreCollections;
 import com.rbonaventure.potpourri.utils.Traces;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static com.rbonaventure.potpourri.App.TAG;
 
@@ -50,26 +42,24 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
     private List<Collaborator> mSelectedCollaborators = new ArrayList<>();
 
     Context mContext;
-    Trace mTrace;
     Filter mFilter;
 
     public CollaboratorsAdapter() {
 
-        mTrace = FirebasePerformance.getInstance().newTrace(Traces.COLLABORATORS_TIME);
-        mTrace.start();
+        Traces.start(Traces.COLLABORATORS_TIME);
 
-        FirebaseFirestore.getInstance().collection(FirestoreCollections.RESOURCES).orderBy("icon").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        // Fetch collaborators list from Firestore
+        Collaborator.getAll(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()) {
                     mCollaborators = task.getResult();
                     CollaboratorsAdapter.this.notifyDataSetChanged();
-                } else {
-                    Log.v(TAG, task.getException().toString());
                 }
-                mTrace.stop();
+                Traces.stop(Traces.COLLABORATORS_TIME);
             }
         });
+
     }
 
     @Override
@@ -83,9 +73,8 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
     public void onBindViewHolder(final CollaboratorViewHolder holder, int position) {
         final Collaborator collaborator = mSelectedCollaborators.get(position);
 
-        // How many likes did the collaborator get ?
-        collaborator.getRef().collection(FirestoreCollections.LIKES)
-                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+        // How many likes did the collaborator get ? In real time.
+        collaborator.setOnlikesCountChange(new EventListener<QuerySnapshot>() {
              @Override
              public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
                  if(e != null) {
@@ -96,19 +85,24 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
              }
          });
 
-        // Did I already like it or not ?
-        collaborator.getRef().collection(FirestoreCollections.LIKES).document(App.getGUID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+        // Did I already like the collaborator's profile or not ?
+        collaborator.setOnLikeChange(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
                 if(e != null) {
                     Log.v(TAG, e.getMessage());
-                } else if (documentSnapshot.exists()) {
+                } else {
                     holder.mLike.setCompoundDrawablesWithIntrinsicBounds(
-                            ContextCompat.getDrawable(mContext, R.drawable.ic_thumb_up), null, null, null);
+                            ContextCompat.getDrawable(mContext,
+                                documentSnapshot.exists() ? R.drawable.ic_thumb_up : R.drawable.ic_thumb_up_outline),
+                                null,
+                                null,
+                                null);
                 }
             }
         });
 
+        // Display a list of keywords
         holder.mKeywords.removeAllViews();
         for(String keyword : collaborator.getKeywords()) {
             TextView tag = new TextView(mContext);
@@ -118,6 +112,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
             holder.mKeywords.addView(tag);
         }
 
+        // Display a list of clients the collaborators worked with
         holder.mReferences.removeAllViews();
         for(String reference : collaborator.getReferences()) {
             ImageView logo = new ImageView(mContext);
@@ -125,6 +120,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
             holder.mReferences.addView(logo);
         }
 
+        // Display the name, the job and the favourite quote of the collaborator
         String content = mContext.getString(R.string.resource_content_format,
                 collaborator.getName(), collaborator.getJob(), collaborator.getQuote());
 
@@ -139,21 +135,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
         holder.mParent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Map<String, Date> like = new HashMap<>();
-                like.put("date", new Date());
-                collaborator.getRef().collection(FirestoreCollections.LIKES).document(App.getGUID())
-                        .set(like).addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()) {
-
-                        } else {
-                            Log.v(TAG, task.getException().toString());
-                        }
-
-                    }
-                });
-
+                collaborator.like();
             }
         });
     }
