@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
     <com.rbonaventure.potpourri.ui.BewizyuWebSite
         android:id="@+id/wv_rendering_experiment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/tv_welcome_message"/>
+        android:layout_below="@id/tv_welcome_message" />
 
 </RelativeLayout>
