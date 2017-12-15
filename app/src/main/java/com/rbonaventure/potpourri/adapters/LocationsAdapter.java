@@ -1,11 +1,14 @@
 package com.rbonaventure.potpourri.adapters;
 
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.rbonaventure.potpourri.R;
@@ -18,6 +21,21 @@ import com.rbonaventure.potpourri.models.Location;
 public class LocationsAdapter extends BaseAdapter {
 
     private QuerySnapshot mLocations;
+
+    public LocationsAdapter() {
+
+        // Fetch locations list from Firestore
+        Location.getAll(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isSuccessful()) {
+                    mLocations = task.getResult();
+                    LocationsAdapter.this.notifyDataSetChanged();
+                }
+            }
+        });
+
+    }
 
     @Override
     public int getCount() {
@@ -48,8 +66,4 @@ public class LocationsAdapter extends BaseAdapter {
         return view;
     }
 
-    public void setLocations(QuerySnapshot snapshot) {
-        mLocations = snapshot;
-        this.notifyDataSetChanged();
-    }
 }

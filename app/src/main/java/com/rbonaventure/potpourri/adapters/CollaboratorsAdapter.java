@@ -3,6 +3,7 @@ package com.rbonaventure.potpourri.adapters;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -19,19 +20,18 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
-import com.rbonaventure.potpourri.App;
 import com.rbonaventure.potpourri.R;
 import com.rbonaventure.potpourri.models.Collaborator;
-import com.rbonaventure.potpourri.utils.FirestoreCollections;
 import com.rbonaventure.potpourri.utils.Traces;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.rbonaventure.potpourri.App.TAG;
 
 /**
  * Created by rbonaventure on 04/12/2017.
@@ -42,26 +42,24 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
     private List<Collaborator> mSelectedCollaborators = new ArrayList<>();
 
     Context mContext;
-    Trace mTrace;
     Filter mFilter;
 
     public CollaboratorsAdapter() {
 
-        mTrace = FirebasePerformance.getInstance().newTrace(Traces.COLLABORATORS_TIME);
-        mTrace.start();
+        Traces.start(Traces.COLLABORATORS_TIME);
 
-        FirebaseFirestore.getInstance().collection(FirestoreCollections.RESOURCES).orderBy("icon").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        // Fetch collaborators list from Firestore
+        Collaborator.getAll(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if(task.isSuccessful()) {
                     mCollaborators = task.getResult();
                     CollaboratorsAdapter.this.notifyDataSetChanged();
-                } else {
-                    Log.v(App.TAG, task.getException().toString());
                 }
-                mTrace.stop();
+                Traces.stop(Traces.COLLABORATORS_TIME);
             }
         });
+
     }
 
     @Override
@@ -72,9 +70,39 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
     }
 
     @Override
-    public void onBindViewHolder(CollaboratorViewHolder holder, int position) {
-        Collaborator collaborator = mSelectedCollaborators.get(position);
+    public void onBindViewHolder(final CollaboratorViewHolder holder, int position) {
+        final Collaborator collaborator = mSelectedCollaborators.get(position);
 
+        // How many likes did the collaborator get ? In real time.
+        collaborator.setOnlikesCountChange(new EventListener<QuerySnapshot>() {
+             @Override
+             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                 if(e != null) {
+                    Log.v(TAG, e.getMessage());
+                 } else {
+                     holder.mLike.setText(documentSnapshots.getDocuments().size() + "");
+                 }
+             }
+         });
+
+        // Did I already like the collaborator's profile or not ?
+        collaborator.setOnLikeChange(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if(e != null) {
+                    Log.v(TAG, e.getMessage());
+                } else {
+                    holder.mLike.setCompoundDrawablesWithIntrinsicBounds(
+                            ContextCompat.getDrawable(mContext,
+                                documentSnapshot.exists() ? R.drawable.ic_thumb_up : R.drawable.ic_thumb_up_outline),
+                                null,
+                                null,
+                                null);
+                }
+            }
+        });
+
+        // Display a list of keywords
         holder.mKeywords.removeAllViews();
         for(String keyword : collaborator.getKeywords()) {
             TextView tag = new TextView(mContext);
@@ -84,13 +112,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
             holder.mKeywords.addView(tag);
         }
 
-        holder.mReferences.removeAllViews();
-        for(String reference : collaborator.getReferences()) {
-            ImageView logo = new ImageView(mContext);
-            Picasso.with(mContext).load(reference).resize(0, 50).into(logo);
-            holder.mReferences.addView(logo);
-        }
-
+        // Display the name, the job and the favourite quote of the collaborator
         String content = mContext.getString(R.string.resource_content_format,
                 collaborator.getName(), collaborator.getJob(), collaborator.getQuote());
 
@@ -101,6 +123,13 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
         }
 
         Picasso.with(mContext).load(collaborator.getImageUrl()).placeholder(R.mipmap.ic_launcher).into(holder.mIcon);
+
+        holder.mParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                collaborator.like();
+            }
+        });
     }
 
     @Override
@@ -117,17 +146,19 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
     }
 
     static class CollaboratorViewHolder extends RecyclerView.ViewHolder {
+        View mParent;
         TextView mName;
+        TextView mLike;
         ImageView mIcon;
         LinearLayout mKeywords;
-        LinearLayout mReferences;
 
         public CollaboratorViewHolder(View itemView) {
             super(itemView);
+            mParent = itemView;
             mIcon = itemView.findViewById(R.id.iv_client_logo);
+            mLike = itemView.findViewById(R.id.tv_like);
             mName = itemView.findViewById(R.id.tv_client_name);
             mKeywords = itemView.findViewById(R.id.ll_keywords);
-            mReferences = itemView.findViewById(R.id.ll_references);
         }
     }
 
@@ -144,6 +175,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
 
                 for (DocumentSnapshot document : mCollaborators.getDocuments()) {
                     Collaborator collaborator = document.toObject(Collaborator.class);
+                    collaborator.setRef(document.getReference());
 
                     if (constraint.equals(collaborator.getLocation())) {
                         collaborators.add(collaborator);
