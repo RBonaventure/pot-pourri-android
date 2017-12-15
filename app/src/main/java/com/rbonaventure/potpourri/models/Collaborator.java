@@ -1,5 +1,6 @@
 package com.rbonaventure.potpourri.models;
 
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.IgnoreExtraProperties;
 import com.google.firebase.firestore.PropertyName;
 
@@ -33,6 +34,8 @@ public class Collaborator {
     @PropertyName("references")
     List<String> mReferences = new ArrayList<>();
 
+    DocumentReference mRef;
+
     public Collaborator() {
 
     }
@@ -65,4 +68,10 @@ public class Collaborator {
         return mReferences;
     }
 
+    public void setRef(DocumentReference ref) {
+        this.mRef = ref;
+    }
+    public DocumentReference getRef() {
+        return mRef;
+    }
 }
