@@ -5,7 +5,13 @@ package com.rbonaventure.potpourri.utils;
  */
 
 public class FirestoreCollections {
+
     public static final String RESOURCES = "resources";
     public static final String LOCATIONS = "locations";
     public static final String LIKES = "likes";
+
+    FirestoreCollections() {
+
+    }
+
 }

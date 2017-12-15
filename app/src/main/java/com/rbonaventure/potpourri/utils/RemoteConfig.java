@@ -12,4 +12,8 @@ public class RemoteConfig {
     public final static String EXPERIMENTATION_ENABLED_KEY = "experimentation_enabled";
     public final static String REACTJS_ENABLED_KEY = "reactjs_enabled";
 
+    RemoteConfig() {
+
+    }
+
 }

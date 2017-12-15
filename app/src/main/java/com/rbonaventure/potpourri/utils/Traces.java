@@ -32,4 +32,9 @@ public class Traces {
     private static Trace getTrace(String traceName) {
         return mTraces.containsKey(traceName) ? mTraces.get(traceName) : FirebasePerformance.getInstance().newTrace(traceName);
     }
+
+    Traces() {
+
+    }
+    
 }

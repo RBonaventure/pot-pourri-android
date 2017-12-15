@@ -51,10 +51,6 @@ public class Collaborator {
 
     DocumentReference mRef;
 
-    public Collaborator() {
-
-    }
-
     public String getName() {
         return mName;
     }
@@ -98,9 +94,7 @@ public class Collaborator {
                 .set(like).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                if(task.isSuccessful()) {
-
-                } else {
+                if(!task.isSuccessful()) {
                     Log.v(TAG, task.getException().toString());
                 }
 

@@ -71,6 +71,7 @@ public class ReactJSvsPlainHTML extends WebView {
                 Traces.start(mRenderingType.getTraceName());
             }
 
+            @Override
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
 

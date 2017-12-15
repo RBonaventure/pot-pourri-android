@@ -19,10 +19,6 @@ public class Location {
     @PropertyName("address")
     String mAddress;
 
-    public Location() {
-
-    }
-
     public String getName() {
         return mName;
     }

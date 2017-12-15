@@ -32,7 +32,7 @@ public class App extends Application {
             Log.v(TAG, "GUID : " + guid);
         }
 
-        mGUID = prefs.getString(UNIQUE_ID_KEY, "");
+        App.mGUID = prefs.getString(UNIQUE_ID_KEY, "");
     }
 
     public static String getGUID() {
