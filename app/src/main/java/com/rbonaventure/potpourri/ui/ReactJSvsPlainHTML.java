@@ -8,8 +8,6 @@ import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
-import com.google.firebase.perf.FirebasePerformance;
-import com.google.firebase.perf.metrics.Trace;
 import com.google.firebase.remoteconfig.FirebaseRemoteConfig;
 import com.rbonaventure.potpourri.App;
 import com.rbonaventure.potpourri.BuildConfig;
@@ -26,7 +24,6 @@ public class ReactJSvsPlainHTML extends WebView {
 
     private final FirebaseRemoteConfig mFirebaseRemoteConfig;
 
-    private Trace mRenderingTrace;
     private RenderingType mRenderingType;
 
     private enum RenderingType {
@@ -71,15 +68,14 @@ public class ReactJSvsPlainHTML extends WebView {
                 super.onPageStarted(view, url, favicon);
 
                 Log.d(App.TAG, "onPageStarted " + url);
-                mRenderingTrace = FirebasePerformance.getInstance().newTrace(mRenderingType.getTraceName());
-                mRenderingTrace.start();
+                Traces.start(mRenderingType.getTraceName());
             }
 
             public void onPageFinished(WebView view, String url) {
                 super.onPageFinished(view, url);
 
                 Log.d(App.TAG, "onPageFinished " + url);
-                mRenderingTrace.stop();
+                Traces.stop(mRenderingType.getTraceName());
             }
         });
 
