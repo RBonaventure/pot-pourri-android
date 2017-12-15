@@ -5,13 +5,13 @@
     <!-- Welcome message displayed on the MainActivity -->
     <entry>
         <key>welcome_message</key>
-        <value>Je n\'ai pas de message de bienvenue</value>
+        <value>Pas de connexion internet</value>
     </entry>
 
     <!-- Firestore Fragment Header -->
     <entry>
         <key>the_team</key>
-        <value></value>
+        <value>Pas de connexion internet</value>
     </entry>
 
     <!-- Whether the experimentation is enabled or not. -->
