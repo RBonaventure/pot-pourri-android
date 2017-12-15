@@ -6,6 +6,7 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -40,9 +41,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         DebugView actionBarDebugView = new DebugView(this);
-        actionBarDebugView.setTextColor(getResources().getColor(android.R.color.white));
-        getSupportActionBar().setDisplayShowCustomEnabled(true);
+        actionBarDebugView.setTextColor(ContextCompat.getColor(this, android.R.color.white));
         getSupportActionBar().setCustomView(actionBarDebugView);
+        getSupportActionBar().setDisplayShowCustomEnabled(true);
 
         mWelcomeMessage = findViewById(R.id.tv_welcome_message);
 
