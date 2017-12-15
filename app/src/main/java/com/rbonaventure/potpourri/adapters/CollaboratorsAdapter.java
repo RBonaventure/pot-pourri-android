@@ -3,6 +3,7 @@ package com.rbonaventure.potpourri.adapters;
 import android.content.Context;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.RecyclerView;
 import android.text.Html;
 import android.util.Log;
@@ -19,7 +20,9 @@ import android.widget.TextView;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.Trace;
@@ -31,7 +34,12 @@ import com.rbonaventure.potpourri.utils.Traces;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static com.rbonaventure.potpourri.App.TAG;
 
 /**
  * Created by rbonaventure on 04/12/2017.
@@ -57,7 +65,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
                     mCollaborators = task.getResult();
                     CollaboratorsAdapter.this.notifyDataSetChanged();
                 } else {
-                    Log.v(App.TAG, task.getException().toString());
+                    Log.v(TAG, task.getException().toString());
                 }
                 mTrace.stop();
             }
@@ -72,8 +80,34 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
     }
 
     @Override
-    public void onBindViewHolder(CollaboratorViewHolder holder, int position) {
-        Collaborator collaborator = mSelectedCollaborators.get(position);
+    public void onBindViewHolder(final CollaboratorViewHolder holder, int position) {
+        final Collaborator collaborator = mSelectedCollaborators.get(position);
+
+        // How many likes did the collaborator get ?
+        collaborator.getRef().collection(FirestoreCollections.LIKES)
+                .addSnapshotListener(new EventListener<QuerySnapshot>() {
+             @Override
+             public void onEvent(QuerySnapshot documentSnapshots, FirebaseFirestoreException e) {
+                 if(e != null) {
+                    Log.v(TAG, e.getMessage());
+                 } else {
+                     holder.mLike.setText(documentSnapshots.getDocuments().size() + "");
+                 }
+             }
+         });
+
+        // Did I already like it or not ?
+        collaborator.getRef().collection(FirestoreCollections.LIKES).document(App.getGUID()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(DocumentSnapshot documentSnapshot, FirebaseFirestoreException e) {
+                if(e != null) {
+                    Log.v(TAG, e.getMessage());
+                } else if (documentSnapshot.exists()) {
+                    holder.mLike.setCompoundDrawablesWithIntrinsicBounds(
+                            ContextCompat.getDrawable(mContext, R.drawable.ic_thumb_up), null, null, null);
+                }
+            }
+        });
 
         holder.mKeywords.removeAllViews();
         for(String keyword : collaborator.getKeywords()) {
@@ -101,6 +135,27 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
         }
 
         Picasso.with(mContext).load(collaborator.getImageUrl()).placeholder(R.mipmap.ic_launcher).into(holder.mIcon);
+
+        holder.mParent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Map<String, Date> like = new HashMap<>();
+                like.put("date", new Date());
+                collaborator.getRef().collection(FirestoreCollections.LIKES).document(App.getGUID())
+                        .set(like).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if(task.isSuccessful()) {
+
+                        } else {
+                            Log.v(TAG, task.getException().toString());
+                        }
+
+                    }
+                });
+
+            }
+        });
     }
 
     @Override
@@ -117,14 +172,18 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
     }
 
     static class CollaboratorViewHolder extends RecyclerView.ViewHolder {
+        View mParent;
         TextView mName;
+        TextView mLike;
         ImageView mIcon;
         LinearLayout mKeywords;
         LinearLayout mReferences;
 
         public CollaboratorViewHolder(View itemView) {
             super(itemView);
+            mParent = itemView;
             mIcon = itemView.findViewById(R.id.iv_client_logo);
+            mLike = itemView.findViewById(R.id.tv_like);
             mName = itemView.findViewById(R.id.tv_client_name);
             mKeywords = itemView.findViewById(R.id.ll_keywords);
             mReferences = itemView.findViewById(R.id.ll_references);
@@ -144,6 +203,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
 
                 for (DocumentSnapshot document : mCollaborators.getDocuments()) {
                     Collaborator collaborator = document.toObject(Collaborator.class);
+                    collaborator.setRef(document.getReference());
 
                     if (constraint.equals(collaborator.getLocation())) {
                         collaborators.add(collaborator);
