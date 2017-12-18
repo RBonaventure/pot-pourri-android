@@ -112,6 +112,14 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
             holder.mKeywords.addView(tag);
         }
 
+        // Display a list of clients the collaborators worked with
+        holder.mReferences.removeAllViews();
+        for(String reference : collaborator.getReferences()) {
+            ImageView logo = new ImageView(mContext);
+            Picasso.with(mContext).load(reference).resize(0, 50).into(logo);
+            holder.mReferences.addView(logo);
+        }
+
         // Display the name, the job and the favourite quote of the collaborator
         String content = mContext.getString(R.string.resource_content_format,
                 collaborator.getName(), collaborator.getJob(), collaborator.getQuote());
@@ -122,9 +130,9 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
             holder.mName.setText(Html.fromHtml(content));
         }
 
-        Picasso.with(mContext).load(collaborator.getImageUrl()).placeholder(R.mipmap.ic_launcher).into(holder.mIcon);
+        Picasso.with(mContext).load(collaborator.getIcon()).placeholder(R.mipmap.ic_launcher).into(holder.mIcon);
 
-        holder.mParent.setOnClickListener(new View.OnClickListener() {
+        holder.mLike.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 collaborator.like();
@@ -151,6 +159,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
         TextView mLike;
         ImageView mIcon;
         LinearLayout mKeywords;
+        LinearLayout mReferences;
 
         public CollaboratorViewHolder(View itemView) {
             super(itemView);
@@ -159,6 +168,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
             mLike = itemView.findViewById(R.id.tv_like);
             mName = itemView.findViewById(R.id.tv_client_name);
             mKeywords = itemView.findViewById(R.id.ll_keywords);
+            mReferences = itemView.findViewById(R.id.ll_references);
         }
     }
 

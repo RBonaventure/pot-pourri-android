@@ -27,10 +27,15 @@ public class Traces {
 
     public static void stop(String traceName) {
         getTrace(traceName).stop();
+        mTraces.remove(traceName);
     }
 
     private static Trace getTrace(String traceName) {
-        return mTraces.containsKey(traceName) ? mTraces.get(traceName) : FirebasePerformance.getInstance().newTrace(traceName);
+        if(!mTraces.containsKey(traceName)) {
+            mTraces.put(traceName, FirebasePerformance.getInstance().newTrace(traceName));
+        }
+
+        return mTraces.get(traceName);
     }
 
     Traces() {
