@@ -122,7 +122,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
             holder.mName.setText(Html.fromHtml(content));
         }
 
-        Picasso.with(mContext).load(collaborator.getImageUrl()).placeholder(R.mipmap.ic_launcher).into(holder.mIcon);
+        Picasso.with(mContext).load(collaborator.getIcon()).placeholder(R.mipmap.ic_launcher).into(holder.mIcon);
 
         holder.mParent.setOnClickListener(new View.OnClickListener() {
             @Override

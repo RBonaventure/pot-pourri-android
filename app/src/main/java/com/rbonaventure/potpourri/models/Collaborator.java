@@ -35,7 +35,7 @@ public class Collaborator {
     String mQuote;
 
     @PropertyName("icon")
-    String mImageUrl;
+    String mIcon;
 
     @PropertyName("job")
     String mJob;
@@ -55,8 +55,8 @@ public class Collaborator {
         return mName;
     }
 
-    public String getImageUrl() {
-        return mImageUrl;
+    public String getIcon() {
+        return mIcon;
     }
 
     public String getQuote() {
