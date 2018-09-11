@@ -4,11 +4,12 @@ apply plugin: 'com.google.firebase.firebase-perf'
 apply plugin: 'org.sonarqube'
 
 android {
-    compileSdkVersion 26
+    compileSdkVersion 27
     defaultConfig {
         applicationId "com.rbonaventure.potpourri"
-        minSdkVersion 14
-        targetSdkVersion 26
+        minSdkVersion 16
+        targetSdkVersion 27
+        multiDexEnabled true
         versionCode 2
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -28,8 +29,8 @@ android {
     }
 }
 
-def firebase = '11.6.2';
-def support = '26.1.0';
+def firebase = '16.0.3';
+def support = '27.1.1';
 
 dependencies {
 
@@ -39,14 +40,15 @@ dependencies {
     implementation "com.android.support:design:${support}"
     implementation "com.android.support:support-v4:${support}"
 
-    implementation('com.crashlytics.sdk.android:crashlytics:2.7.1@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.9.3@aar') {
         transitive = true
     }
 
     implementation "com.google.firebase:firebase-core:${firebase}"
-    implementation "com.google.firebase:firebase-perf:${firebase}"
-    implementation "com.google.firebase:firebase-config:${firebase}"
-    implementation "com.google.firebase:firebase-firestore:${firebase}"
+    implementation "com.google.firebase:firebase-perf:16.1.0"
+    implementation "com.google.firebase:firebase-config:16.0.0"
+    implementation "com.google.firebase:firebase-firestore:17.1.0"
+    implementation 'com.google.firebase:firebase-inappmessaging-display:17.0.1'
 
     implementation 'com.squareup.picasso:picasso:2.5.2'
     implementation 'com.rbonaventure.debug:simple-view:0.0.4'
@@ -57,3 +59,5 @@ dependencies {
 }
 
 apply plugin: 'com.google.gms.google-services'
+
+com.google.gms.googleservices.GoogleServicesPlugin.config.disableVersionCheck = true
