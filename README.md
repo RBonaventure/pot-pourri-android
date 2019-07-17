@@ -1,4 +1,4 @@
-Firebase Sample Project [![Build Status](https://www.bitrise.io/app/68b366f10733eac7/status.svg?token=4slKldu0Q3CBdQDSUJSDhw&branch=master)](https://www.bitrise.io/app/68b366f10733eac7)
+Firebase Sample Project [![Build Status](https://app.bitrise.io/app/2f1629da6bc411f3/status.svg?token=WXqV2bHihKG8eE5EhALqmw&branch=master)](https://app.bitrise.io/app/2f1629da6bc411f3) [![Build Status](https://travis-ci.org/RBonaventure/pot-pourri-android.svg?branch=master)](https://travis-ci.org/RBonaventure/pot-pourri-android) [![Codacy Badge](https://api.codacy.com/project/badge/Grade/edcf58b434dd4b549cbb7a0741a95e28)](https://www.codacy.com/app/RBonaventure/pot-pourri-android?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=RBonaventure/pot-pourri-android&amp;utm_campaign=Badge_Grade)
 ===
 
 Auteur : Raphaël Bonaventure
