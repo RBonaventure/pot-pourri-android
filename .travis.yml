@@ -10,4 +10,9 @@ android:
     - android-27
     - extra-android-m2repository
 
-script: ./gradlew :app:testDebugUnitTest :app:assembleDebug
+jobs:
+  include:
+    - stage: test
+    script : ./gradlew :app:testDebugUnitTest
+    - stage: build
+    script: ./gradlew :app:assembleDebug
