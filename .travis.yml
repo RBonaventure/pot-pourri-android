@@ -6,8 +6,8 @@ android:
   components:
     - platform-tools
     - tools
-    - build-tools-27.0.3
+    - build-tools-26.0.2
     - android-27
     - extra-android-m2repository
 
-script: ./gradlew app:testDebugUnitTest :app:assembleDebug
+script: ./gradlew :app:testDebugUnitTest :app:assembleDebug
