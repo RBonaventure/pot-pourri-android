@@ -142,7 +142,7 @@ public class CollaboratorsAdapter extends RecyclerView.Adapter<CollaboratorsAdap
 
     @Override
     public int getItemCount() {
-        return mSelectedCollaborators.size();
+        return (mSelectedCollaborators != null ? mSelectedCollaborators.size() : 0);
     }
 
     @Override
