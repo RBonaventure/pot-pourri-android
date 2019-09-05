@@ -15,7 +15,7 @@ jobs:
         java-version: 1.8
     - name: Build with Gradle
       run: ./gradlew assembleDebug
-  - uses: actions/upload-artifact@master
-    with:
-      name: pot-pourri-debug
-      path: app/build/outputs/apk/app-debug.apk
+    - uses: actions/upload-artifact@master
+      with:
+        name: pot-pourri-debug
+        path: app/build/outputs/apk/app-debug.apk
